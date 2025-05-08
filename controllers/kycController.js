@@ -1,7 +1,7 @@
 // src/controllers/kycController.js
 
 import { KycRequestModel, UserModel } from '../models/Schema.js';
-const { v4: uuidv4 } = require('uuid');
+import { v4 as uuidv4 } from 'uuid';
 
 
 // Get all KYC requests
