@@ -38,6 +38,7 @@ const UserSchema = new Schema({
   email: { type: String, unique: true },
   phone: { type: String, required: true },
   address: { type: String, required: true },
+  distributorId: { type: String, required: true, unique: true },
   profilePicture: { type: String }, // Reference File collection
   sponsorId: { type: String, default: null }, // User ID of sponsor (uuid)
   referralCode: { type: String, unique: true },
