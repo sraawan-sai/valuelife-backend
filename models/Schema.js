@@ -192,6 +192,17 @@ const AdminSchema = new Schema({
   password: String
 })
 
+const ProductSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true }, // UUID from frontend
+  name: { type: String, required: true },
+  price: { type: Number, required: true }, // Price in paise (e.g., ₹199 = 19900)
+  description: { type: String },
+  commissionRate: { type: Number, default: 0 }, // Optional commission %
+  active: { type: Boolean, default: true },
+  createdDate: { type: Date, required: true } // ISO string from frontend
+});
+
+
 // --- Create Mongoose Models ---
 
 export const UserModel = mongoose.model('User', UserSchema);
@@ -206,6 +217,7 @@ export const WithdrawalRequestModel = mongoose.model('WithdrawalRequest', Withdr
 export const OrderModel = mongoose.model('Order', OrderSchema);
 export const FileModel = mongoose.model('File', StoredFileSchema);
 export const AdminModel = mongoose.model('Admin', AdminSchema);
+export const ProductModel = mongoose.model('Product', ProductSchema);
 
 // Settings collection for single configuration documents like adminAuth
 // This is accessed directly in controllers for simplicity
