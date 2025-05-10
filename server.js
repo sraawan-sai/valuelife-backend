@@ -38,10 +38,12 @@ const PORT = process.env.PORT || 3001; // PORT from .env
 // --- Middleware (Used by BOTH versions, keep active) ---
 app.use(express.json({ limit: '50mb' })); // Parse incoming JSON requests. Increase limit for base64 files.
 app.use(cors({
-  origin: 'https://valuelife.vercel.app', // allow your frontend domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true // if you need to send cookies or auth headers
-})); // Enable CORS for all origins (adjust in production)
+
+  origin: '*', // your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // allowed methods
+  credentials: true // if you're sending cookies or auth headers
+}));
+
 
 
 // --- Database Connection (NEW MongoDB version - ACTIVE) ---
