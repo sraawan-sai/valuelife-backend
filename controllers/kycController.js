@@ -35,46 +35,74 @@ export const createKycRequest = async (req, res) => {
   try {
     let requestData = req.body.submission;
     const userId = req.body.userId;
-    const userName = req.body.userName
+    const userName = req.body.userName;
 
-    if (typeof requestData.submissionDate === 'string') requestData.submissionDate = new Date(requestData.submissionDate);
+    if (typeof requestData.submissionDate === 'string') {
+      requestData.submissionDate = new Date(requestData.submissionDate);
+    }
 
-    const newKyc = {
-      id: uuidv4(),
+    const existingRequest = await KycRequestModel.findOne({
       userId: userId,
+      documentType: requestData.documentType
+    });
+
+    let kycEntry = {
+      userId,
       userName,
       inputValue: requestData.inputValue,
       documentType: requestData.documentType,
       status: requestData.status,
       submissionDate: requestData.submittedAt
+    };
+
+    let savedRequest;
+
+    if (existingRequest) {
+      // Replace existing request with new data
+      Object.assign(existingRequest, kycEntry);
+      savedRequest = await existingRequest.save();
+      console.log(`Updated existing KYC document for user ${userId} and documentType ${requestData.documentType}`);
+    } else {
+      // Create new KYC request
+      const newKyc = {
+        id: uuidv4(),
+        ...kycEntry
+      };
+      const newRequest = new KycRequestModel(newKyc);
+      savedRequest = await newRequest.save();
+      console.log(`Created new KYC document for user ${userId}`);
     }
 
-    const newRequest = new KycRequestModel(newKyc);
-    await newRequest.save(); // Save the new request document
-
-    // --- Backend Logic: Update User KYC Status and History ---
+    // --- Update User Model ---
     const user = await UserModel.findOne({ id: userId });
     if (user) {
-      user.kycStatus = 'pending'; // Status becomes pending when a new request is submitted
-      if (!user.kycHistory) {
-        user.kycHistory = [];
-      }
+      user.kycStatus = 'pending';
+      if (!user.kycHistory) user.kycHistory = [];
 
-      user.kycHistory.push(newKyc);
-      await user.save(); // Save updated user document
-      console.log(`User ${user.id} KYC status updated to pending and history entry added.`);
+      // Remove any previous history entry with same documentType
+      user.kycHistory = user.kycHistory.filter(
+        entry => entry.documentType !== requestData.documentType
+      );
+
+      user.kycHistory.push({
+        id: savedRequest.id,
+        ...kycEntry
+      });
+
+      await user.save();
+      console.log(`User ${user.id} KYC status set to pending and updated history`);
     } else {
-      console.warn(`User ${newRequest.userId} not found when creating KYC request.`);
+      console.warn(`User ${userId} not found`);
     }
-    // --- End Backend Logic ---
 
+    res.status(201).json(savedRequest);
 
-    res.status(201).json(newRequest); // Respond with created request
   } catch (error) {
     console.error('Error creating KYC request:', error);
     res.status(500).json({ error: 'Failed to create KYC request', details: error.message });
   }
 };
+
 
 // Update a KYC request by ID (Backend logic to update user status/history)
 export const updateKycRequest = async (req, res) => {
