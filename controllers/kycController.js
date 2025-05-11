@@ -154,3 +154,37 @@ export const getKycDocumentsByUser = async (req, res) => {
     res.status(500).json({ success: false, error: 'Failed to fetch KYC documents' });
   }
 };
+
+// Delete a KYC request by its UUID `id` and update user history
+export const deleteKycRequest = async (req, res) => {
+  try {
+    const kycId = req.params.id;
+
+    // Find the request
+    const request = await KycRequestModel.findOne({ id: kycId });
+    if (!request) {
+      return res.status(404).json({ error: 'KYC request not found' });
+    }
+
+    // Delete the request
+    await KycRequestModel.deleteOne({ id: kycId });
+
+    // Also remove from user's KYC history
+    const user = await UserModel.findOne({ id: request.userId });
+    if (user && Array.isArray(user.kycHistory)) {
+      user.kycHistory = user.kycHistory.filter(entry => entry.id !== kycId);
+
+      // If user has no more KYC entries, reset status
+      if (user.kycHistory.length === 0) {
+        user.kycStatus = 'not_submitted';
+      }
+
+      await user.save();
+    }
+
+    res.status(200).json({ message: 'KYC request deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting KYC request:', error);
+    res.status(500).json({ error: 'Failed to delete KYC request' });
+  }
+};
