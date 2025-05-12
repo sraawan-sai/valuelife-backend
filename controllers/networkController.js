@@ -6,7 +6,7 @@ import { NetworkMemberNodeModel, UserModel } from '../models/Schema.js';
 // Get network node by user ID (populate children for tree traversal)
 export const getNetworkNode = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.query;
        // const { userId } = req.query; // Assuming userId is passed as a query parameter
         // Find the node by the custom 'id' field and populate direct children
         // Mongoose populate works well for direct children if 'children' array stores ObjectIds or matching Strings
