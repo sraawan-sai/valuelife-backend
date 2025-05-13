@@ -73,7 +73,8 @@ const NetworkMemberNodeSchema = new Schema({
   joinDate: { type: Date, required: true },
   active: { type: Boolean, default: true },
   // Store direct children IDs as strings matching User.id / Node.id (uuid strings)
-  children: [{ type: String, ref: 'User' }] // Reference User collection (or NetworkMemberNode) by ID string
+  children: [{ type: Schema.Types.ObjectId, ref: 'User' }]
+  // Reference User collection (or NetworkMemberNode) by ID string
 });
 
 // Network Stats Schema (store one per user, or one global)
