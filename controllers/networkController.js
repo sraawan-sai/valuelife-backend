@@ -2,28 +2,38 @@
 
 import { NetworkMemberNodeModel, UserModel } from '../models/Schema.js';
 
-
-// Get network node by user ID (populate children for tree traversal)
 export const getNetworkNode = async (req, res) => {
     try {
-        const { userId } = req.query;
-       // const { userId } = req.query; // Assuming userId is passed as a query parameter
-        // Find the node by the custom 'id' field and populate direct children
-        // Mongoose populate works well for direct children if 'children' array stores ObjectIds or matching Strings
-        const userNode = await NetworkMemberNodeModel.findOne({ id: userId }).populate('children'); // Populate direct children
+        const userId = req.params.userId;
+
+        console.log('Requested User ID:', userId);
+
+        // Step 1: Find the network node (parent)
+        const userNode = await NetworkMemberNodeModel.findOne({ id: userId });
 
         if (!userNode) {
-            // Return 404 if the node doesn't exist in the collection
             return res.status(404).json({ error: 'Network node not found for user' });
         }
 
-        res.json(userNode); // Return the node with direct children populated
+        const childIds = userNode.children || [];
+
+        console.log('Children IDs:', childIds);
+
+        // Step 2: Query the User collection to get full details of the children
+        const childUsers = await UserModel.find({ id: { $in: childIds } });
+
+        console.log(`Found ${childUsers.length} children`);
+        console.log(childUsers);
+
+        // Step 3: Send combined response
+        res.status(200).json({ childUsers });
 
     } catch (error) {
         console.error('Error getting network node:', error);
-        res.status(500).json({ error: 'Failed to retrieve network node' });
+        res.status(500).json({ error: 'Failed to retrieve network node and children' });
     }
 };
+
 
 // Update network node by user ID
 export const updateNetworkNode = async (req, res) => {
