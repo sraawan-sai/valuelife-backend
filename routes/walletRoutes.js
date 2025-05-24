@@ -2,7 +2,7 @@
 
 import express from 'express';
 import { Router } from 'express';
-import { getUserWallet } from '../controllers/getuserWallet.js';
+import { getUserWallet } from '../controllers/wallet.js';
 
 const router = Router();
 
