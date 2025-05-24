@@ -19,6 +19,7 @@ import settingsRoutes from './routes/settingsRoutes.js'; // Includes /commission
 import statsRoutes from './routes/statsRoutes.js'; // Includes /stats/network and /stats/dashboard
 import networkRoutes from './routes/networkRoutes.js'; // Includes /network/:userId and /network/root
 import productRoutes from './routes/productRoutes.js'; // Includes /products/*
+import walletRoutes from './routes/walletRoutes.js'; // Includes /wallet/*
 
 // --- Imports for the OLD db.json version (COMMENTED OUT) ---
 /*
@@ -108,6 +109,7 @@ app.use('/api/db/admin', adminRoutes); // Handles /api/db/admin/* (e.g., /api/db
 app.use('/api/db', settingsRoutes); // Handles /api/db/commissionStructure and /api/db/currentUser
 app.use('/api/db/stats', statsRoutes); // Handles /api/db/stats/*
 app.use('/api/db/network', networkRoutes); // Handles /api/db/network/*
+app.use('/api/db/wallet', walletRoutes)
 
 // Mount the /clear route directly at /api/db/clear (assuming adminRoutes exports handler)
 // Note: The order matters if multiple routes match. Specific routes should be mounted before more general ones.
