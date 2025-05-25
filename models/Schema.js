@@ -52,7 +52,7 @@ const UserSchema = new Schema({
 
 // Transaction Schema
 const TransactionSchema = new Schema({
-  id: { type: String, required: true, unique: true }, // Frontend generated uuid
+  id: { type: String, unique: true }, // Frontend generated uuid
   userId: { type: String, required: true, ref: 'User' }, // User ID who earned/was affected
   amount: { type: Number, required: true },
   type: { type: String, enum: ['retail_profit', 'referral_bonus', 'team_matching', 'royalty_bonus', 'repurchase_bonus', 'award_reward', 'withdrawal', 'withdrawal_reversal', 'admin_fee_collection'], required: true },
