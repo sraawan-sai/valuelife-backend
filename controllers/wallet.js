@@ -16,8 +16,8 @@ export const getUserWallet = async (req, res) => {
         // Check if userId is an ObjectId, and convert it only if necessary
         let query = { userId };
         if (mongoose.Types.ObjectId.isValid(userId)) {
-            // Convert userId to ObjectId if it's a valid ObjectId string
-            query = { userId: mongoose.Types.ObjectId(userId) };
+            // Use 'new' keyword to properly instantiate ObjectId
+            query = { userId: new mongoose.Types.ObjectId(userId) };
         }
 
         // Find wallet for the user
@@ -26,7 +26,7 @@ export const getUserWallet = async (req, res) => {
         if (!wallet) {
             console.log('Wallet not found, creating new wallet for userId:', userId);
             wallet = new WalletModel({
-                userId: mongoose.Types.ObjectId(userId), // ensure ObjectId if needed
+                userId: new mongoose.Types.ObjectId(userId), // ensure ObjectId if needed
                 balance: 0
             });
             await wallet.save();
