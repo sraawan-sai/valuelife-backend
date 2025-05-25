@@ -50,3 +50,49 @@ export const getUserWallet = async (req, res) => {
         });
     }
 }
+export const updateUserWallet = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { balance, transactions } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: 'User ID is required'
+            });
+        }
+
+        const objectId = new mongoose.Types.ObjectId(userId);
+
+        // Find the wallet by userId
+        let wallet = await WalletModel.findOne({ userId: objectId });
+
+        if (!wallet) {
+            return res.status(404).json({
+                success: false,
+                message: 'Wallet not found'
+            });
+        }
+
+        // Update wallet fields (balance and transactions)
+        wallet.balance = balance || wallet.balance;
+        wallet.transactions = transactions || wallet.transactions;
+
+        // Save the updated wallet
+        await wallet.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Wallet updated successfully',
+            data: wallet
+        });
+        
+    } catch (error) {
+        console.error('Error updating wallet:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
