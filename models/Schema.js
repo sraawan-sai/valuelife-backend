@@ -149,7 +149,7 @@ const KycRequestSchema = new Schema({
 
 // Withdrawal Request Schema
 const WithdrawalRequestSchema = new Schema({
-  id: { type: String, required: true, unique: true }, // Frontend generated uuid
+  //id: { type: String, required: true, unique: true }, // Frontend generated uuid
   userId: { type: String, required: true, ref: 'User' }, // User ID (uuid string)
   userName: { type: String, required: true }, // Denormalize
   amount: { type: Number, required: true },
