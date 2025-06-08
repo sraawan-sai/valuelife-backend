@@ -70,7 +70,7 @@ const TransactionSchema = new Schema({
 // Network Member Node Schema (store individual nodes)
 const NetworkMemberNodeSchema = new Schema({
   id: { type: String, required: true, unique: true }, // Corresponds to User ID (uuid)
-  name: { type: Sting },
+  name: { type: String },
   profilePicture: { type: String }, // Or ref to File if not base64 here
   referralCode: { type: String },
   joinDate: { type: Date, required: true },
