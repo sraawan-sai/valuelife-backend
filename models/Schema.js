@@ -47,7 +47,9 @@ const UserSchema = new Schema({
   kycDocuments: { type: KycDocumentsRefsSchema, default: {} },
   bankDetails: { type: BankDetailsSchema, default: {} },
   password: { type: String }, // STORE HASHED PASSWORDS IN PRODUCTION!
-  kycHistory: [KycSubmissionSchema] // Embedded array
+  kycHistory: [KycSubmissionSchema], // Embedded array
+  placementId: { type: String, default: null, ref: 'User' }, // User ID of the upline member they are placed directly under in the binary/matrix tree
+  placementPosition: { type: String, enum: ['left', 'right', 'center', null], default: null } // Their position under placementId (e.g., 'left', 'right' for binary)
 });
 
 // Transaction Schema
@@ -55,27 +57,36 @@ const TransactionSchema = new Schema({
   id: { type: String, unique: true }, // Frontend generated uuid
   userId: { type: String, required: true, ref: 'User' }, // User ID who earned/was affected
   amount: { type: Number, required: true },
-  type: { type: String, enum: ['retail_profit', 'referral_bonus', 'team_matching', 'royalty_bonus', 'repurchase_bonus', 'award_reward', 'withdrawal', 'withdrawal_reversal', 'admin_fee_collection'], required: true },
+  type: { type: String, enum: ['retail_profit', 'referral_bonus', 'team_matching', 'royalty_bonus', 'repurchase_bonus', 'award_reward', 'withdrawal', 'withdrawal_reversal', 'admin_fee_collection', 'purchase', 'tds_deduction', 'admin_fee_deduction', 'repurchase_allocation', 'level_commission'], required: true }, // <--- UPDATED ENUM
   description: { type: String, required: true },
   date: { type: Date, required: true },
   status: { type: String, enum: ['pending', 'completed', 'rejected'], required: true },
   relatedUserId: { type: String, ref: 'User' }, // For referral/level commissions (the user who caused the commission)
   level: { type: Number }, // For level commissions
-  pairs: { type: Number } // For team matching bonus
+  pairs: { type: Number }, // For team matching bonus
+  visibility: { type: String, enum: ['both', 'admin'], default: 'both', required: true } // <--- NEW FIELD
 });
 
 // Network Member Node Schema (store individual nodes)
 const NetworkMemberNodeSchema = new Schema({
   id: { type: String, required: true, unique: true }, // Corresponds to User ID (uuid)
-  name: { type: String },
+  name: { type: Sting },
   profilePicture: { type: String }, // Or ref to File if not base64 here
   referralCode: { type: String },
   joinDate: { type: Date, required: true },
   active: { type: Boolean, default: true },
   // Store direct children IDs as strings matching User.id / Node.id (uuid strings)
-  children: [{ type: Schema.Types.ObjectId, ref: 'User' }]
-  // Reference User collection (or NetworkMemberNode) by ID string
+  children: [{
+        childUserId: { type: String, ref: 'User', required: true }, // The ID of the child user
+        position: { type: String, enum: ['left', 'right'], required: true } // Their position under this node
+    }],
+    // Optional: Add accumulated leg volumes or counts for faster querying if needed for stats
+    // totalLeftLegMembers: { type: Number, default: 0 },
+    // totalRightLegMembers: { type: Number, default: 0 },
+    // totalLeftLegVolume: { type: Number, default: 0 },
+    // totalRightLegVolume: { type: Number, default: 0 },
 });
+
 
 // Network Stats Schema (store one per user, or one global)
 const NetworkStatsSchema = new Schema({

@@ -84,7 +84,22 @@ export const createUser = async (req, res) => {
         children: []
       })
     ]);
-
+// --- ADD THIS BLOCK ---
+const { sponsorId, id: childUserId, placementPosition } = newUser;
+if (sponsorId && placementPosition) {
+  await NetworkMemberNodeModel.findOneAndUpdate(
+    { id: sponsorId },
+    {
+      $push: {
+        children: {
+          childUserId,
+          position: placementPosition
+        }
+      }
+    }
+  );
+}
+// --- END BLOCK ---
     res.status(201).json(newUser); // Respond with created user
   }
   catch (error) {
