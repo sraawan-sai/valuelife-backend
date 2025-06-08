@@ -37,6 +37,7 @@ const UserSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true },
   phone: { type: String, required: true },
+  active: { type: Boolean, default: true },
   address: { type: String, required: true },
   distributorId: { type: String, required: true, unique: true },
   profilePicture: { type: String }, // Reference File collection

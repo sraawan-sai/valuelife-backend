@@ -5,7 +5,6 @@ import { NetworkMemberNodeModel, UserModel } from '../models/Schema.js';
 export const getNetworkNode = async (req, res) => {
     try {
         const userId = req.params.userId;
-
         console.log('Requested User ID:', userId);
 
         // Step 1: Find the network node (parent)
@@ -15,7 +14,8 @@ export const getNetworkNode = async (req, res) => {
             return res.status(404).json({ error: 'Network node not found for user' });
         }
 
-        const childIds = userNode.children || [];
+        // Extract childUserIds from the children array
+        const childIds = (userNode.children || []).map(child => child.childUserId);
 
         console.log('Children IDs:', childIds);
 
@@ -33,7 +33,6 @@ export const getNetworkNode = async (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve network node and children' });
     }
 };
-
 
 // Update network node by user ID
 export const updateNetworkNode = async (req, res) => {
