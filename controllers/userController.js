@@ -85,20 +85,20 @@ export const createUser = async (req, res) => {
       })
     ]);
 // --- ADD THIS BLOCK ---
-const { sponsorId, id: childUserId, placementPosition } = newUser;
-if (sponsorId && placementPosition) {
-  await NetworkMemberNodeModel.findOneAndUpdate(
-    { id: sponsorId },
-    {
-      $push: {
-        children: {
-          childUserId,
-          position: placementPosition
+const { placementId, id: childUserId, placementPosition } = newUser;
+    if (placementId && placementPosition) {
+      await NetworkMemberNodeModel.findOneAndUpdate(
+        { referralCode: placementId },
+        {
+          $push: {
+            children: {
+              childUserId,
+              position: placementPosition
+            }
+          }
         }
-      }
+      );
     }
-  );
-}
 // --- END BLOCK ---
     res.status(201).json(newUser); // Respond with created user
   }
