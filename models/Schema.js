@@ -50,7 +50,7 @@ const UserSchema = new Schema({
   password: { type: String }, // STORE HASHED PASSWORDS IN PRODUCTION!
   kycHistory: [KycSubmissionSchema], // Embedded array
   placementId: { type: String, default: null, ref: 'User' }, // User ID of the upline member they are placed directly under in the binary/matrix tree
-  placementPosition: { type: String, enum: ['left', 'right', 'center', null], default: null } // Their position under placementId (e.g., 'left', 'right' for binary)
+  position: { type: String, enum: ['left', 'right', 'center', null], default: null } // Their position under placementId (e.g., 'left', 'right' for binary)
 });
 
 // Transaction Schema

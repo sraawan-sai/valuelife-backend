@@ -85,15 +85,15 @@ export const createUser = async (req, res) => {
       })
     ]);
 // --- ADD THIS BLOCK ---
-const { placementId, id: childUserId, placementPosition } = newUser;
-    if (placementId && placementPosition) {
+const { placementId, id: childUserId, position } = newUser;
+    if (placementId && position) {
       await NetworkMemberNodeModel.findOneAndUpdate(
         { referralCode: placementId },
         {
           $push: {
             children: {
               childUserId,
-              position: placementPosition
+              position: position
             }
           }
         }
